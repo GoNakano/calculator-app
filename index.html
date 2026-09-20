@@ -85,62 +85,37 @@
       </div>
     </div>
     <script>
+      // DOM取得
       const display = document.getElementById("display");
 
       const numberButtons = document.querySelectorAll(
         '[data-testid="btn-0"], [data-testid="btn-1"], [data-testid="btn-2"], [data-testid="btn-3"], [data-testid="btn-4"], [data-testid="btn-5"], [data-testid="btn-6"], [data-testid="btn-7"], [data-testid="btn-8"], [data-testid="btn-9"]',
       );
 
-      numberButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-          if (display.value === "Error") {
-            display.value = "";
-          }
-
-          display.value += button.textContent;
-        });
-      });
+      const extraButtons = document.querySelectorAll(
+        '[data-testid="btn-dot"], [data-testid="btn-paren-left"], [data-testid="btn-paren-right"]',
+      );
 
       const clearButton = document.querySelector('[data-testid="btn-clear"]');
-
-      clearButton.addEventListener("click", function () {
-        display.value = "";
-      });
-
       const backspaceButton = document.querySelector(
         '[data-testid="btn-backspace"]',
       );
-
-      backspaceButton.addEventListener("click", function () {
-        display.value = display.value.slice(0, -1);
-      });
-
       const operatorButtons = document.querySelectorAll(
         '[data-testid="btn-divide"], [data-testid="btn-multiply"], [data-testid="btn-subtract"], [data-testid="btn-add"]',
       );
 
-      operatorButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-          display.value += button.textContent;
-        });
-      });
-
-      const subButtons = document.querySelectorAll(
-        '[data-testid="btn-dot"], [data-testid="btn-paren-left"], [data-testid="btn-paren-right"]',
-      );
-
-      subButtons.forEach(function (button) {
-        button.addEventListener("click", function () {
-          if (display.value === "Error") {
-            display.value = "";
-          }
-          display.value += button.textContent;
-        });
-      });
-
       const equalsButton = document.querySelector('[data-testid="btn-equals"]');
 
-      equalsButton.addEventListener("click", function () {
+      // 共通処理
+      function appendToDisplay(text) {
+        if (display.value === "Error") {
+          display.value = "";
+        }
+
+        display.value += text;
+      }
+
+      function calculateResult() {
         try {
           const expression = display.value.replace(/×/g, "*");
           const result = eval(expression);
@@ -153,6 +128,36 @@
         } catch (error) {
           display.value = "Error";
         }
+      }
+      // イベント
+      numberButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          appendToDisplay(button.textContent);
+        });
+      });
+
+      clearButton.addEventListener("click", function () {
+        display.value = "";
+      });
+
+      backspaceButton.addEventListener("click", function () {
+        display.value = display.value.slice(0, -1);
+      });
+
+      operatorButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          display.value += button.textContent;
+        });
+      });
+
+      extraButtons.forEach(function (button) {
+        button.addEventListener("click", function () {
+          appendToDisplay(button.textContent);
+        });
+      });
+
+      equalsButton.addEventListener("click", function () {
+        calculateResult();
       });
     </script>
   </body>
