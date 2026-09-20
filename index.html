@@ -84,6 +84,7 @@
         <button data-testid="btn-equals" class="operator">=</button>
 
         <button data-testid="btn-quotient-remainder">商・余り</button>
+        <button data-testid="btn-percent">%</button>
       </div>
     </div>
     <script>
@@ -110,6 +111,10 @@
 
       const quotientRemainderButton = document.querySelector(
         '[data-testid="btn-quotient-remainder"]',
+      );
+
+      const percentButton = document.querySelector(
+        '[data-testid="btn-percent"]',
       );
 
       let resultType = null;
@@ -176,6 +181,23 @@
         resultType = "quotient";
       }
 
+      function calculatePercent() {
+        if (display.value === "" || display.value === "Error") {
+          showError();
+          return;
+        }
+
+        const value = Number(display.value);
+
+        if (!Number.isFinite(value)) {
+          showError();
+          return;
+        }
+
+        display.value = value / 100;
+        resultType = "normal";
+      }
+
       // イベント
       numberButtons.forEach(function (button) {
         button.addEventListener("click", function () {
@@ -230,6 +252,10 @@
 
       quotientRemainderButton.addEventListener("click", function () {
         calculateQuotientRemainder();
+      });
+
+      percentButton.addEventListener("click", function () {
+        calculatePercent();
       });
     </script>
   </body>
