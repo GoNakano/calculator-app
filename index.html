@@ -115,10 +115,19 @@
       let resultType = null;
 
       // 関数定義
+      function showError() {
+        display.value = "Error";
+        resultType = null;
+      }
+
+      function resetDisplay() {
+        display.value = "";
+        resultType = null;
+      }
+
       function appendToDisplay(text) {
         if (display.value === "Error" || resultType !== null) {
-          display.value = "";
-          resultType = null;
+          resetDisplay();
         }
 
         display.value += text;
@@ -133,12 +142,10 @@
             display.value = result;
             resultType = "normal";
           } else {
-            display.value = "Error";
-            resultType = null;
+            showError();
           }
         } catch (error) {
-          display.value = "Error";
-          resultType = null;
+          showError();
         }
       }
 
@@ -146,8 +153,7 @@
         const parts = display.value.split("/");
 
         if (parts.length !== 2 || parts[0] === "" || parts[1] === "") {
-          display.value = "Error";
-          resultType = null;
+          showError();
           return;
         }
 
@@ -159,8 +165,7 @@
           !Number.isInteger(divisor) ||
           divisor === 0
         ) {
-          display.value = "Error";
-          resultType = null;
+          showError();
           return;
         }
 
@@ -170,6 +175,7 @@
         display.value = `商: ${quotient} 余り: ${remainder}`;
         resultType = "quotient";
       }
+
       // イベント
       numberButtons.forEach(function (button) {
         button.addEventListener("click", function () {
@@ -178,14 +184,12 @@
       });
 
       clearButton.addEventListener("click", function () {
-        display.value = "";
-        resultType = null;
+        resetDisplay();
       });
 
       backspaceButton.addEventListener("click", function () {
         if (display.value === "Error" || resultType === "quotient") {
-          display.value = "";
-          resultType = null;
+          resetDisplay();
           return;
         }
 
