@@ -82,6 +82,8 @@
         <button data-testid="btn-dot">.</button>
         <button data-testid="btn-backspace">←</button>
         <button data-testid="btn-equals" class="operator">=</button>
+
+        <button data-testid="btn-quotient-remainder">商・余り</button>
       </div>
     </div>
     <script>
@@ -106,10 +108,17 @@
 
       const equalsButton = document.querySelector('[data-testid="btn-equals"]');
 
-      // 共通処理
+      const quotientRemainderButton = document.querySelector(
+        '[data-testid="btn-quotient-remainder"]',
+      );
+
+      let resultType = null;
+
+      // 関数定義
       function appendToDisplay(text) {
-        if (display.value === "Error") {
+        if (display.value === "Error" || resultType !== null) {
           display.value = "";
+          resultType = null;
         }
 
         display.value += text;
@@ -122,12 +131,44 @@
 
           if (Number.isFinite(result)) {
             display.value = result;
+            resultType = "normal";
           } else {
             display.value = "Error";
+            resultType = null;
           }
         } catch (error) {
           display.value = "Error";
+          resultType = null;
         }
+      }
+
+      function calculateQuotientRemainder() {
+        const parts = display.value.split("/");
+
+        if (parts.length !== 2 || parts[0] === "" || parts[1] === "") {
+          display.value = "Error";
+          resultType = null;
+          return;
+        }
+
+        const dividend = Number(parts[0]);
+        const divisor = Number(parts[1]);
+
+        if (
+          !Number.isInteger(dividend) ||
+          !Number.isInteger(divisor) ||
+          divisor === 0
+        ) {
+          display.value = "Error";
+          resultType = null;
+          return;
+        }
+
+        const quotient = Math.trunc(dividend / divisor);
+        const remainder = dividend % divisor;
+
+        display.value = `商: ${quotient} 余り: ${remainder}`;
+        resultType = "quotient";
       }
       // イベント
       numberButtons.forEach(function (button) {
@@ -138,14 +179,37 @@
 
       clearButton.addEventListener("click", function () {
         display.value = "";
+        resultType = null;
       });
 
       backspaceButton.addEventListener("click", function () {
+        if (display.value === "Error" || resultType === "quotient") {
+          display.value = "";
+          resultType = null;
+          return;
+        }
+
+        if (resultType === "normal") {
+          resultType = null;
+        }
+
         display.value = display.value.slice(0, -1);
       });
 
       operatorButtons.forEach(function (button) {
         button.addEventListener("click", function () {
+          if (display.value === "Error") {
+            return;
+          }
+
+          if (resultType === "quotient") {
+            return;
+          }
+
+          if (resultType === "normal") {
+            resultType = null;
+          }
+
           display.value += button.textContent;
         });
       });
@@ -158,6 +222,10 @@
 
       equalsButton.addEventListener("click", function () {
         calculateResult();
+      });
+
+      quotientRemainderButton.addEventListener("click", function () {
+        calculateQuotientRemainder();
       });
     </script>
   </body>
