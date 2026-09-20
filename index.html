@@ -85,6 +85,8 @@
 
         <button data-testid="btn-quotient-remainder">商・余り</button>
         <button data-testid="btn-percent">%</button>
+        <button data-testid="btn-tax-8">8%税込</button>
+        <button data-testid="btn-tax-10">10%税込</button>
       </div>
     </div>
     <script>
@@ -116,6 +118,10 @@
       const percentButton = document.querySelector(
         '[data-testid="btn-percent"]',
       );
+
+      const tax8Button = document.querySelector('[data-testid="btn-tax-8"]');
+
+      const tax10Button = document.querySelector('[data-testid="btn-tax-10"]');
 
       let resultType = null;
 
@@ -181,20 +187,42 @@
         resultType = "quotient";
       }
 
-      function calculatePercent() {
+      function getDisplayNumber() {
         if (display.value === "" || display.value === "Error") {
-          showError();
-          return;
+          return null;
         }
 
         const value = Number(display.value);
 
         if (!Number.isFinite(value)) {
+          return null;
+        }
+
+        return value;
+      }
+
+      function calculatePercent() {
+        const value = getDisplayNumber();
+
+        if (value === null) {
           showError();
           return;
         }
 
         display.value = value / 100;
+        resultType = "normal";
+      }
+
+      function calculateTax(rate) {
+        const value = getDisplayNumber();
+
+        if (value === null) {
+          showError();
+          return;
+        }
+
+        const result = value * rate;
+        display.value = Number(result.toFixed(10));
         resultType = "normal";
       }
 
@@ -256,6 +284,14 @@
 
       percentButton.addEventListener("click", function () {
         calculatePercent();
+      });
+
+      tax8Button.addEventListener("click", function () {
+        calculateTax(1.08);
+      });
+
+      tax10Button.addEventListener("click", function () {
+        calculateTax(1.1);
       });
     </script>
   </body>
